@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>簡易RDF・SPARQL演習ツール</title>
+<style>
+body{font:16px system-ui,sans-serif;max-width:1050px;margin:32px auto;padding:0 18px;color:#243142}section{border:1px solid #ccd5df;border-radius:8px;padding:18px;margin:18px 0}h2{font-size:19px;margin-top:0}textarea{box-sizing:border-box;width:100%;font:14px monospace;padding:10px}button{padding:8px 14px;margin:6px 6px 6px 0;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f5f7;padding:12px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #ccd5df;padding:7px;text-align:left;overflow-wrap:anywhere}th{background:#eef2f6}.scroll{overflow:auto;max-height:340px}.error{color:#a21b25}.ok{color:#17663b}button:disabled{cursor:default}small{color:#526174}
+</style></head><body>
+<h1>簡易RDF・SPARQL演習ツール v4.1</h1><p>RDFを読み込み、構文を確認してSPARQLで検索します。</p>
+<p id="startup" role="status">ライブラリを読み込み中…</p>
+<section><h2>1. RDFファイルの読み込み</h2><input id="file" type="file" accept=".ttl,.nt,text/turtle,application/n-triples" disabled><button id="sample" disabled>サンプルRDFを読み込む</button><p id="status" role="status"></p><details><summary>読み込んだRDFの原文</summary><pre id="source"></pre></details><details open><summary>トリプル一覧（最大200件）</summary><div class="scroll" id="triples"></div></details></section>
+<section><h2>2. SPARQLクエリ</h2><textarea id="query" rows="8" spellcheck="false">SELECT ?s ?p ?o
+WHERE {
+  ?s ?p ?o .
+}
+LIMIT 100</textarea><button id="run" disabled>クエリ実行</button><button id="all">全トリプルの検索例</button><button id="names">名前の検索例</button><small>SELECTのみ対応。名前の検索例は rdfs:label を検索します。</small></section>
+<section><h2>3. 検索結果</h2><p id="qstatus" role="status"></p><div id="results" class="scroll"></div></section>
+<script src="https://rdf.js.org/comunica-browser/versions/v4/engines/query-sparql-rdfjs/comunica-browser.js"></script>
+<script type="module">
+const $ = id => document.getElementById(id);
+const sample = `@prefix ex: <http://example.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+ex:Alice rdfs:label "Alice" ; ex:age 21 ; ex:knows ex:Bob .
+ex:Bob rdfs:label "Bob" ; ex:age 22 .`;
+let Parser, Store, engine, SparqlParser, store = null, busy = false;
+function message(id, text, error=false){$(id).textContent=text;$(id).className=error?'error':'ok';}
+function controls(){ $('run').disabled=busy||!store; $('file').disabled=busy; $('sample').disabled=busy; }
+function term(t){if(!t)return '';if(t.termType==='NamedNode')return '<'+t.value+'>';if(t.termType==='BlankNode')return '_:'+t.value;if(t.termType==='Literal')return JSON.stringify(t.value)+(t.language?'@'+t.language:t.datatype?.value==='http://www.w3.org/2001/XMLSchema#string'?'':'^^<'+t.datatype?.value+'>');return t.value;}
+function table(id, headers, rows){const t=document.createElement('table'),head=t.createTHead().insertRow();for(const h of headers){const c=document.createElement('th');c.textContent=h;head.append(c);}const body=t.createTBody();for(const row of rows){const r=body.insertRow();for(const v of row)r.insertCell().textContent=v;}$(id).replaceChildren(t);}
+function reset(){store=null;$('triples').replaceChildren();$('results').replaceChildren();$('qstatus').textContent='';$('source').textContent='';}
+function load(text, name){reset();$('source').textContent=text;try{const parser=new Parser({format:name.toLowerCase().endsWith('.nt')?'N-Triples':'Turtle'});const quads=parser.parse(text);store=new Store(quads);message('status',`${name}：構文チェック成功。${store.size} トリプル（重複除外後）`);table('triples',['主語','述語','目的語'],store.getQuads(null,null,null,null).slice(0,200).map(q=>[term(q.subject),term(q.predicate),term(q.object)]));}catch(e){store=null;message('status','RDF読み込みエラー：'+e.message,true);}controls();}
+$('file').onchange=async()=>{const f=$('file').files[0];if(!f)return;busy=true;controls();reset();try{load(await f.text(),f.name);}catch(e){message('status',e.message,true);}finally{busy=false;controls();}};
+$('sample').onclick=()=>{$('file').value='';load(sample,'sample.ttl');};
+$('all').onclick=()=>{$('query').value='SELECT ?s ?p ?o\nWHERE { ?s ?p ?o . }\nLIMIT 100';};
+$('names').onclick=()=>{$('query').value='PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT ?person ?name\nWHERE { ?person rdfs:label ?name . }';};
+// Reject external data sources, including nested SERVICE and FROM clauses.
+// Expose only the RDF/JS DatasetCore interface; avoid N3's Node-style streams.
+function arrayDataset(quads){return {
+  size:quads.length, [Symbol.iterator](){return quads[Symbol.iterator]();},
+  match(s,p,o,g){return arrayDataset(quads.filter(q=>[s,p,o,g].every((t,i)=>!t||t.equals([q.subject,q.predicate,q.object,q.graph][i]))));},
+  has(q){return quads.some(x=>x.equals(q));}, add(){throw Error('Read-only dataset');}, delete(){throw Error('Read-only dataset');}
+};}
+function external(node){if(!node||typeof node!=='object')return false;if(node.type==='service'||(node.from && Object.values(node.from).some(v=>Array.isArray(v)&&v.length)))return true;return Object.values(node).some(external);}
+$('run').onclick=async()=>{if(!store||busy)return;busy=true;controls();$('results').replaceChildren();message('qstatus','検索中…');let stage='SPARQL構文解析';try{const q=$('query').value;const ast=new SparqlParser().parse(q);if(ast.queryType!=='SELECT')throw Error('SELECTクエリのみ実行できます。');if(external(ast))throw Error('外部データへの問い合わせ（SERVICE / FROM）は利用できません。');stage='クエリ実行';const result=await engine.query(q,{sources:[arrayDataset(store.getQuads(null,null,null,null))]});stage='結果取得';const metadata=await result.metadata();const stream=await result.execute();const vars=metadata.variables.map(v=>v.variable??v);const rows=[];let truncated=false;for await(const b of stream){if(rows.length>=1000){truncated=true;stream.destroy();break;}rows.push(vars.map(v=>term(b.get(v.value))));}table('results',vars.map(v=>'?'+v.value),rows);message('qstatus',`${rows.length} 件${truncated?'（表示上限1000件）':''}`);}catch(e){message('qstatus','SPARQLエラー（'+stage+'）：'+e.message,true);console.error(stage,e);const detail=document.createElement('pre');detail.textContent=e.stack||String(e);$('results').append(detail);}finally{busy=false;controls();}};
+try {
+ const n3 = await import('https://esm.sh/n3@1.26.0?bundle');
+ ({Parser,Store}=n3);
+ message('startup','N3.js 読み込み成功。SPARQLライブラリを確認中…');
+ if (!globalThis.Comunica?.QueryEngine) throw Error('Comunica公式ブラウザ版を取得できませんでした。');
+ engine = new globalThis.Comunica.QueryEngine();
+ const sparql = await import('https://esm.sh/sparqljs@3.7.3?bundle');
+ SparqlParser = sparql.Parser ?? sparql.default?.Parser;
+ if (!SparqlParser) throw Error('SPARQL.js の初期化に失敗しました。');
+ message('startup','準備完了'); controls();
+} catch(e) { message('startup','ライブラリ初期化エラー：'+e.message,true); console.error(e); }
+</script></body></html>

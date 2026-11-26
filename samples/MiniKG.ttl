@@ -1,0 +1,29 @@
+@prefix ex: <http://example.com/> .
+@prefix prop: <http://example.com/prop/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+ex:1 prop:friend ex:2 .
+ex:2 prop:friend ex:3 .
+ex:1 prop:friend ex:3 .
+ex:1 prop:affiliation ex:4 .
+ex:2 prop:affiliation ex:4 .
+ex:3 prop:affiliation ex:5 .
+ex:1 prop:supervisor ex:6 .
+ex:2 prop:supervisor ex:6 .
+ex:3 prop:supervisor ex:7 .
+
+ex:1 rdfs:label "太郎"@ja .
+ex:2 rdfs:label "花子"@ja .
+ex:3 rdfs:label "次郎"@ja .
+ex:4 rdfs:label "A研究室"@ja .
+ex:5 rdfs:label "B研究室"@ja .
+ex:6 rdfs:label "田中先生"@ja .
+ex:7 rdfs:label "佐藤先生"@ja .
+
+prop:friend rdf:type rdf:Property .
+prop:friend rdfs:label "友人"@ja .
+prop:affiliation rdf:type rdf:Property .
+prop:affiliation rdfs:label "所属"@ja .
+prop:supervisor rdf:type rdf:Property .
+prop:supervisor rdfs:label "指導教員"@ja .
