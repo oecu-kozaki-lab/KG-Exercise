@@ -1,28 +1,54 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MiniKG：SPARQLクエリ例</title><style>body{font:16px/1.65 system-ui,sans-serif;color:#243142;max-width:900px;margin:32px auto;padding:0 20px}h1{line-height:1.3}section{border:1px solid #ccd5df;border-radius:8px;padding:18px;margin:18px 0}a{color:#175d9c}pre{background:#f3f5f7;padding:14px;overflow:auto;white-space:pre-wrap}button{padding:8px 14px;cursor:pointer}small{color:#526174}table{border-collapse:collapse}td,th{border:1px solid #ccd5df;padding:5px 12px}</style></head><body><p><a href="../index.html">演習トップ</a></p><h1>MiniKG：SPARQLクエリ例</h1><p><a href="../samples/MiniKG.ttl" download>MiniKG.ttlを保存</a> ／ <a href="../samples/MiniKG.tsv" download>TSVデータ</a> ／ <a href="../tools/rdf-sparql.html" target="_blank" rel="noopener">簡易RDF-DBを開く</a></p><p>MiniKG.ttlを読み込み、各クエリをコピーして実行してください。実行前に結果を予想しましょう。例7は発展課題です。</p><details><summary>MiniKGの知識（9トリプル）</summary><table><tr><th>主語</th><th>述語</th><th>目的語</th></tr><tr><td>太郎</td><td>友人</td><td>花子</td></tr><tr><td>花子</td><td>友人</td><td>次郎</td></tr><tr><td>太郎</td><td>友人</td><td>次郎</td></tr><tr><td>太郎</td><td>所属</td><td>A研究室</td></tr><tr><td>花子</td><td>所属</td><td>A研究室</td></tr><tr><td>次郎</td><td>所属</td><td>B研究室</td></tr><tr><td>太郎</td><td>指導教員</td><td>田中先生</td></tr><tr><td>花子</td><td>指導教員</td><td>田中先生</td></tr><tr><td>次郎</td><td>指導教員</td><td>佐藤先生</td></tr></table></details><section><h2>例1：全トリプルを取得する</h2><button type="button" data-copy="q1">クエリをコピー</button> <small role="status"></small><pre id="q1">PREFIX ex: &lt;http://example.com/&gt;
-PREFIX prop: &lt;http://example.com/prop/&gt;
-PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
-SELECT ?s ?p ?o WHERE { ?s ?p ?o . }</pre><details><summary>期待される結果（22件）</summary>知識9件とラベル・型宣言13件。 結果の順序は不定です。</details></section><section><h2>例2：IRIとラベルを確認する</h2><button type="button" data-copy="q2">クエリをコピー</button> <small role="status"></small><pre id="q2">PREFIX ex: &lt;http://example.com/&gt;
-PREFIX prop: &lt;http://example.com/prop/&gt;
-PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
-SELECT ?x ?label WHERE { ?x rdfs:label ?label . }</pre><details><summary>期待される結果（10件）</summary>ノード7件と述語3件。 結果の順序は不定です。</details></section><section><h2>例3：友人関係を検索する</h2><button type="button" data-copy="q3">クエリをコピー</button> <small role="status"></small><pre id="q3">PREFIX ex: &lt;http://example.com/&gt;
-PREFIX prop: &lt;http://example.com/prop/&gt;
-PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
-SELECT ?x ?y WHERE { ?x prop:friend ?y . }</pre><details><summary>期待される結果（3件）</summary>IRIで3組を取得。 結果の順序は不定です。</details></section><section><h2>例4：友人関係を名前で表示する</h2><button type="button" data-copy="q4">クエリをコピー</button> <small role="status"></small><pre id="q4">PREFIX ex: &lt;http://example.com/&gt;
-PREFIX prop: &lt;http://example.com/prop/&gt;
+<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MiniKG：SPARQLクエリ例</title>
+<style>body{font:16px/1.65 system-ui,sans-serif;color:#243142;max-width:900px;margin:32px auto;padding:0 20px}h1{line-height:1.3}section{border:1px solid #ccd5df;border-radius:8px;padding:18px;margin:18px 0}a{color:#175d9c}pre{background:#f3f5f7;padding:14px;overflow:auto;white-space:pre-wrap}button{padding:8px 14px;cursor:pointer}small{color:#526174}table{border-collapse:collapse}td,th{border:1px solid #ccd5df;padding:5px 12px}h2 small{font-weight:normal}</style></head>
+<body>
+<p><a href="../index.html">演習トップ</a></p>
+<h1>MiniKG：SPARQLクエリ例</h1>
+<p><a href="../samples/MiniKG.ttl" download>MiniKG.ttlを保存</a> ／ <a href="../samples/MiniKG.tsv" download>TSVデータ</a> ／ <a href="../tools/rdf-sparql.html" target="_blank" rel="noopener">簡易RDF-DB v4.1を開く</a></p>
+<p>MiniKG.ttlを読み込み、各クエリをコピーして実行してください。実行前に結果を予想しましょう。例7は発展課題です。各例の見出しには対応するスライドの番号を示しています。</p>
+<p><img src="../samples/MiniKG.svg" alt="MiniKGのグラフ：太郎・花子・次郎の友人関係、所属（A研究室・B研究室）、指導教員（田中先生・佐藤先生）" style="max-width:100%;height:auto"></p>
+<details><summary>MiniKGの知識（9トリプル）</summary><table><tr><th>主語</th><th>述語</th><th>目的語</th></tr><tr><td>太郎</td><td>友人</td><td>花子</td></tr><tr><td>花子</td><td>友人</td><td>次郎</td></tr><tr><td>太郎</td><td>友人</td><td>次郎</td></tr><tr><td>太郎</td><td>所属</td><td>A研究室</td></tr><tr><td>花子</td><td>所属</td><td>A研究室</td></tr><tr><td>次郎</td><td>所属</td><td>B研究室</td></tr><tr><td>太郎</td><td>指導教員</td><td>田中先生</td></tr><tr><td>花子</td><td>指導教員</td><td>田中先生</td></tr><tr><td>次郎</td><td>指導教員</td><td>佐藤先生</td></tr></table><p>述語の対応：友人＝prop:friend、所属＝prop:affiliation、指導教員＝prop:supervisor</p></details>
+<section>
+<h2>例1：全トリプルを取得する <small>（スライド SPARQL①）</small></h2>
+<button type="button" data-copy="q1">クエリをコピー</button> <small role="status"></small>
+<pre id="q1">SELECT ?s ?p ?o WHERE { ?s ?p ?o . }</pre>
+<details><summary>期待される結果（22件）</summary>知識9件とラベル・型宣言13件。 結果の順序は不定です。</details>
+</section>
+<section>
+<h2>例2：IRIとラベルを確認する <small>（スライド SPARQL①）</small></h2>
+<button type="button" data-copy="q2">クエリをコピー</button> <small role="status"></small>
+<pre id="q2">PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT ?x ?label WHERE {
+  ?x rdfs:label ?label .
+}</pre>
+<details><summary>期待される結果（10件）</summary>ノード7件と述語3件。例1と比べ、IRIと名前の違いを確認する。 結果の順序は不定です。</details>
+</section>
+<section>
+<h2>例3：友人関係を検索する <small>（スライド SPARQL②）</small></h2>
+<button type="button" data-copy="q3">クエリをコピー</button> <small role="status"></small>
+<pre id="q3">PREFIX prop: &lt;http://example.com/prop/&gt;
+SELECT ?x ?y WHERE {
+  ?x prop:friend ?y .
+}</pre>
+<details><summary>期待される結果（3件）</summary>太郎→花子、花子→次郎、太郎→次郎（結果はIRI）。 結果の順序は不定です。</details>
+</section>
+<section>
+<h2>例4：友人関係を名前で表示する <small>（スライド SPARQL③）</small></h2>
+<button type="button" data-copy="q4">クエリをコピー</button> <small role="status"></small>
+<pre id="q4">PREFIX prop: &lt;http://example.com/prop/&gt;
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 SELECT ?name1 ?name2 WHERE {
   ?x prop:friend ?y .
   ?x rdfs:label ?name1 .
   ?y rdfs:label ?name2 .
-}</pre><details><summary>期待される結果（3件）</summary>太郎→花子、花子→次郎、太郎→次郎。 結果の順序は不定です。</details></section><section><h2>例5：太郎の指導教員を検索する</h2><button type="button" data-copy="q5">クエリをコピー</button> <small role="status"></small><pre id="q5">PREFIX ex: &lt;http://example.com/&gt;
-PREFIX prop: &lt;http://example.com/prop/&gt;
-PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
-SELECT ?teacherName WHERE {
-  ?student rdfs:label &quot;太郎&quot;@ja .
-  ?student prop:supervisor ?teacher .
-  ?teacher rdfs:label ?teacherName .
-}</pre><details><summary>期待される結果（1件）</summary>田中先生。 結果の順序は不定です。</details></section><section><h2>例6：友人の友人を検索する</h2><button type="button" data-copy="q6">クエリをコピー</button> <small role="status"></small><pre id="q6">PREFIX ex: &lt;http://example.com/&gt;
-PREFIX prop: &lt;http://example.com/prop/&gt;
+}</pre>
+<details><summary>期待される結果（3件）</summary>太郎・花子、花子・次郎、太郎・次郎。 結果の順序は不定です。</details>
+</section>
+<section>
+<h2>例5：友人の友人を検索する <small>（スライド SPARQL④）</small></h2>
+<button type="button" data-copy="q5">クエリをコピー</button> <small role="status"></small>
+<pre id="q5">PREFIX prop: &lt;http://example.com/prop/&gt;
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 SELECT ?name1 ?name2 ?name3 WHERE {
   ?x prop:friend ?y .
@@ -30,8 +56,34 @@ SELECT ?name1 ?name2 ?name3 WHERE {
   ?x rdfs:label ?name1 .
   ?y rdfs:label ?name2 .
   ?z rdfs:label ?name3 .
-}</pre><details><summary>期待される結果（1件）</summary>太郎→花子→次郎。 結果の順序は不定です。</details></section><section><h2>例7：同じ研究室に所属する人物（発展）</h2><button type="button" data-copy="q7">クエリをコピー</button> <small role="status"></small><pre id="q7">PREFIX ex: &lt;http://example.com/&gt;
-PREFIX prop: &lt;http://example.com/prop/&gt;
+}</pre>
+<details><summary>期待される結果（1件）</summary>太郎→花子→次郎。prop:friend は向きのある関係なので、花子→太郎の向きはない。 結果の順序は不定です。</details>
+</section>
+<section>
+<h2>例6：名前から検索する（太郎の指導教員） <small>（スライド SPARQL⑤）</small></h2>
+<button type="button" data-copy="q6">クエリをコピー</button> <small role="status"></small>
+<pre id="q6">PREFIX prop: &lt;http://example.com/prop/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT ?teacherName WHERE {
+  ?student rdfs:label "太郎"@ja .
+  ?student prop:supervisor ?teacher .
+  ?teacher rdfs:label ?teacherName .
+}</pre>
+<details><summary>期待される結果（1件）</summary>田中先生。"太郎"（@jaなし）では0件になる。 結果の順序は不定です。</details>
+</section>
+<section>
+<h2>例7：同じ研究室に所属する人物（発展） <small>（スライド SPARQL⑥）</small></h2>
+<button type="button" data-copy="q7">クエリをコピー</button> <small role="status"></small>
+<pre id="q7">PREFIX prop: &lt;http://example.com/prop/&gt;
+SELECT ?x ?y ?lab WHERE {
+  ?x prop:affiliation ?lab .
+  ?y prop:affiliation ?lab .
+  FILTER (?x != ?y)
+}</pre>
+<details><summary>期待される結果（2件）</summary>太郎・花子の組が2方向で得られる（結果はIRI）。 結果の順序は不定です。</details>
+<h3>例7b：名前で表示する</h3>
+<button type="button" data-copy="q7b">クエリをコピー</button> <small role="status"></small>
+<pre id="q7b">PREFIX prop: &lt;http://example.com/prop/&gt;
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 SELECT ?name1 ?name2 ?labName WHERE {
   ?x prop:affiliation ?lab .
@@ -40,4 +92,8 @@ SELECT ?name1 ?name2 ?labName WHERE {
   ?x rdfs:label ?name1 .
   ?y rdfs:label ?name2 .
   ?lab rdfs:label ?labName .
-}</pre><details><summary>期待される結果（2件）</summary>太郎・花子と花子・太郎（A研究室）。 結果の順序は不定です。</details></section><script>document.querySelectorAll('button[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const el=document.getElementById(b.dataset.copy);try{await navigator.clipboard.writeText(el.textContent);b.nextElementSibling.textContent='コピーしました';}catch(e){const r=document.createRange();r.selectNodeContents(el);const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.nextElementSibling.textContent='選択しました。Ctrl+Cでコピーしてください。';}}));</script></body></html>
+}</pre>
+<details><summary>期待される結果（2件）</summary>太郎・花子・A研究室、花子・太郎・A研究室。 結果の順序は不定です。</details>
+</section>
+<script>document.querySelectorAll('button[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const el=document.getElementById(b.dataset.copy);try{await navigator.clipboard.writeText(el.textContent);b.nextElementSibling.textContent='コピーしました';}catch(e){const r=document.createRange();r.selectNodeContents(el);const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.nextElementSibling.textContent='選択しました。Ctrl+Cでコピーしてください。';}}));</script>
+</body></html>

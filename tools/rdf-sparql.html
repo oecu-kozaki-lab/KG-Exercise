@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ja">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>簡易RDF・SPARQL演習ツール</title>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>簡易RDF-DB v4.1</title>
 <style>
 body{font:16px system-ui,sans-serif;max-width:1050px;margin:32px auto;padding:0 18px;color:#243142}section{border:1px solid #ccd5df;border-radius:8px;padding:18px;margin:18px 0}h2{font-size:19px;margin-top:0}textarea{box-sizing:border-box;width:100%;font:14px monospace;padding:10px}button{padding:8px 14px;margin:6px 6px 6px 0;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f5f7;padding:12px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #ccd5df;padding:7px;text-align:left;overflow-wrap:anywhere}th{background:#eef2f6}.scroll{overflow:auto;max-height:340px}.error{color:#a21b25}.ok{color:#17663b}button:disabled{cursor:default}small{color:#526174}
 </style></head><body>
-<h1>簡易RDF・SPARQL演習ツール v4.1</h1><p>RDFを読み込み、構文を確認してSPARQLで検索します。</p>
+<h1>簡易RDF-DB v4.1</h1><p>RDFを読み込み、構文を確認してSPARQLで検索します。</p>
 <p id="startup" role="status">ライブラリを読み込み中…</p>
 <section><h2>1. RDFファイルの読み込み</h2><input id="file" type="file" accept=".ttl,.nt,text/turtle,application/n-triples" disabled><button id="sample" disabled>サンプルRDFを読み込む</button><p id="status" role="status"></p><details><summary>読み込んだRDFの原文</summary><pre id="source"></pre></details><details open><summary>トリプル一覧（最大200件）</summary><div class="scroll" id="triples"></div></details></section>
 <section><h2>2. SPARQLクエリ</h2><textarea id="query" rows="8" spellcheck="false">SELECT ?s ?p ?o
