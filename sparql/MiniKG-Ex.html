@@ -96,4 +96,17 @@ SELECT ?name1 ?name2 ?labName WHERE {
 <details><summary>期待される結果（2件）</summary>太郎・花子・A研究室、花子・太郎・A研究室。 結果の順序は不定です。</details>
 </section>
 <script>document.querySelectorAll('button[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const el=document.getElementById(b.dataset.copy);try{await navigator.clipboard.writeText(el.textContent);b.nextElementSibling.textContent='コピーしました';}catch(e){const r=document.createRange();r.selectNodeContents(el);const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.nextElementSibling.textContent='選択しました。Ctrl+Cでコピーしてください。';}}));</script>
+<script>
+// download属性付きリンクを強制保存（ブラウザ表示を防ぐ）。取得できない環境では通常のリンク動作に任せる。
+document.querySelectorAll('a[download]').forEach(a=>a.addEventListener('click',async e=>{
+  e.preventDefault();
+  try{
+    const res=await fetch(a.href); if(!res.ok) throw Error(res.status);
+    const blob=new Blob([await res.arrayBuffer()],{type:'application/octet-stream'});
+    const url=URL.createObjectURL(blob), t=document.createElement('a');
+    t.href=url; t.download=a.getAttribute('download')||decodeURIComponent(a.href.split('/').pop());
+    document.body.append(t); t.click(); t.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }catch(err){ location.href=a.href; }
+}));
+</script>
 </body></html>
