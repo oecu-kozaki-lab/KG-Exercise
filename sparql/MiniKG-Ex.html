@@ -1,112 +1,53 @@
-<!doctype html>
-<html lang="ja">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MiniKG：SPARQLクエリ例</title>
-<style>body{font:16px/1.65 system-ui,sans-serif;color:#243142;max-width:900px;margin:32px auto;padding:0 20px}h1{line-height:1.3}section{border:1px solid #ccd5df;border-radius:8px;padding:18px;margin:18px 0}a{color:#175d9c}pre{background:#f3f5f7;padding:14px;overflow:auto;white-space:pre-wrap}button{padding:8px 14px;cursor:pointer}small{color:#526174}table{border-collapse:collapse}td,th{border:1px solid #ccd5df;padding:5px 12px}h2 small{font-weight:normal}</style></head>
-<body>
-<p><a href="../index.html">演習トップ</a></p>
-<h1>MiniKG：SPARQLクエリ例</h1>
-<p><a href="../samples/MiniKG.ttl" download>MiniKG.ttlを保存</a> ／ <a href="../samples/MiniKG.tsv" download>TSVデータ</a> ／ <a href="../tools/rdf-sparql.html" target="_blank" rel="noopener">簡易RDF-DB v4.1を開く</a></p>
-<p>簡易RDF-DBの「MiniKGサンプル読み込み」ボタン（またはMiniKG.ttl）でMiniKGを読み込み、各クエリをコピーして実行してください。実行前に結果を予想しましょう。例7は発展課題です。各例の見出しには対応するスライドの番号を示しています。</p>
-<p><img src="../samples/MiniKG.svg" alt="MiniKGのグラフ：太郎・花子・次郎の友人関係、所属（A研究室・B研究室）、指導教員（田中先生・佐藤先生）" style="max-width:100%;height:auto"></p>
-<details><summary>MiniKGの知識（9トリプル）</summary><table><tr><th>主語</th><th>述語</th><th>目的語</th></tr><tr><td>太郎</td><td>友人</td><td>花子</td></tr><tr><td>花子</td><td>友人</td><td>次郎</td></tr><tr><td>太郎</td><td>友人</td><td>次郎</td></tr><tr><td>太郎</td><td>所属</td><td>A研究室</td></tr><tr><td>花子</td><td>所属</td><td>A研究室</td></tr><tr><td>次郎</td><td>所属</td><td>B研究室</td></tr><tr><td>太郎</td><td>指導教員</td><td>田中先生</td></tr><tr><td>花子</td><td>指導教員</td><td>田中先生</td></tr><tr><td>次郎</td><td>指導教員</td><td>佐藤先生</td></tr></table><p>述語の対応：友人＝prop:friend、所属＝prop:affiliation、指導教員＝prop:supervisor</p></details>
-<section>
-<h2>例1：全トリプルを取得する <small>（スライド SPARQL①）</small></h2>
-<button type="button" data-copy="q1">クエリをコピー</button> <small role="status"></small>
-<pre id="q1">SELECT ?s ?p ?o WHERE { ?s ?p ?o . }</pre>
-<details><summary>期待される結果（22件）</summary>知識9件とラベル・型宣言13件。 結果の順序は不定です。</details>
-</section>
-<section>
-<h2>例2：IRIとラベルを確認する <small>（スライド SPARQL①）</small></h2>
-<button type="button" data-copy="q2">クエリをコピー</button> <small role="status"></small>
-<pre id="q2">PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+<!DOCTYPE html>
+
+<html lang="ja"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>共通MiniKGでSPARQLを学ぶ</title><style>
+body{font:16px/1.7 system-ui,sans-serif;color:#243142;max-width:900px;margin:32px auto;padding:0 20px}h1,h2{line-height:1.35}section{border:1px solid #ccd5df;border-radius:8px;padding:20px;margin:22px 0}a{color:#175d9c}pre{background:#f3f5f7;padding:14px;overflow:auto;font-size:15px;line-height:1.6}mark{background:#ffe5a3;color:#783b00;font-weight:bold}button{padding:9px 16px;cursor:pointer;font:inherit;border:1px solid #175d9c;border-radius:5px;background:#175d9c;color:white}small{color:#526174}table{border-collapse:collapse;max-width:100%}td,th{border:1px solid #ccd5df;padding:5px 12px;text-align:left}th{background:#f3f5f7}svg{width:100%;max-width:520px;display:block;margin:10px auto}details{margin:12px 0}summary{cursor:pointer;color:#175d9c}nav a{display:inline-block;margin:4px 12px 4px 0}.tag{font-size:.85em;border:1px solid #aab9c8;border-radius:4px;padding:2px 8px;white-space:nowrap}.note{background:#f3f5f7;padding:12px 16px;border-left:4px solid #4472c4}li{margin:4px 0}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #d98a00;outline-offset:3px}</style></head><body><p><a href="../index.html">演習トップ</a> ／ <a href="MyKG-Templates.html">自分のKG用テンプレート集</a></p><h1>共通MiniKGでSPARQLを学ぶ</h1><p><a href="../tools/rdf-sparql.html" rel="noopener" target="_blank">簡易RDF-DBを開く</a> ／ <a download="" href="../samples/MiniKG.ttl">MiniKG.ttl</a> ／ <a href="https://oecu-kozaki-lab.github.io/TSV2KG-Editor/?tsv=https://oecu-kozaki-lab.github.io/KG-Exercise/samples/MiniKG.tsv" rel="noopener" target="_blank">MiniKGの図を確認する</a></p><div class="note">「MiniKGサンプル読み込み」（または「サンプルRDFを読み込む」）ボタンを押し、22トリプルを確認する。基本1〜3とT1〜T3を優先し、余裕があればT4・T5へ。各例では結果を予想してから実行し、書き換え練習に取り組む。</div><nav><a href="#b1">基本1</a><a href="#b2">基本2</a><a href="#b3">基本3</a><a href="#t1">T1</a><a href="#t2">T2</a><a href="#t3">T3</a><a href="#t4">T4</a><a href="#t5">T5</a></nav><section id="b1"><h2>基本1：全トリプルの検索</h2><p>主語・述語・目的語をすべて変数にすると、全トリプルが得られる。</p><button data-copy="bq1" type="button">クエリをコピー</button> <small role="status"></small><pre id="bq1">SELECT ?s ?p ?o WHERE {
+  ?s ?p ?o .
+}</pre><details><summary>期待結果</summary><p>22件</p></details></section><section id="b2"><h2>基本2：ラベルの検索</h2><p>述語をrdfs:labelに固定し、IRIと日本語ラベルの対応を確認する。</p><button data-copy="bq2" type="button">クエリをコピー</button> <small role="status"></small><pre id="bq2">PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 SELECT ?x ?label WHERE {
   ?x rdfs:label ?label .
-}</pre>
-<details><summary>期待される結果（10件）</summary>ノード7件と述語3件。例1と比べ、IRIと名前の違いを確認する。 結果の順序は不定です。</details>
-</section>
-<section>
-<h2>例3：友人関係を検索する <small>（スライド SPARQL②）</small></h2>
-<button type="button" data-copy="q3">クエリをコピー</button> <small role="status"></small>
-<pre id="q3">PREFIX prop: &lt;http://example.com/prop/&gt;
+}</pre><details><summary>期待結果</summary><p>10件</p></details></section><section id="b3"><h2>基本3：友人関係の検索（IRI）</h2><p>述語を <code>prop:friend</code> に固定し、主語と目的語を変数にする。基本1の三つの変数のうち、述語だけを固定した検索である。</p><svg viewBox="0 0 400 100" role="img" aria-label="xからyへのfriend関係"><defs><marker id="ab3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6Z" fill="#4472c4"/></marker></defs><ellipse cx="50" cy="55" rx="34" ry="18" fill="#d5e5fa" stroke="#7fa5d5"/><ellipse cx="350" cy="55" rx="34" ry="18" fill="#d5e5fa" stroke="#7fa5d5"/><line x1="84" y1="55" x2="315" y2="55" stroke="#4472c4" stroke-width="2" marker-end="url(#ab3)"/><g text-anchor="middle" fill="#243142"><text x="50" y="60">?x</text><text x="350" y="60">?y</text><text x="200" y="44">prop:friend</text></g></svg><button data-copy="bq3" type="button">クエリをコピー</button> <small role="status" aria-live="polite"></small><pre id="bq3">PREFIX prop: &lt;http://example.com/prop/&gt;
 SELECT ?x ?y WHERE {
   ?x prop:friend ?y .
-}</pre>
-<details><summary>期待される結果（3件）</summary>太郎→花子、花子→次郎、太郎→次郎（結果はIRI）。 結果の順序は不定です。</details>
-</section>
-<section>
-<h2>例4：友人関係を名前で表示する <small>（スライド SPARQL③）</small></h2>
-<button type="button" data-copy="q4">クエリをコピー</button> <small role="status"></small>
-<pre id="q4">PREFIX prop: &lt;http://example.com/prop/&gt;
+}</pre><details><summary>期待結果（3件）</summary><table><thead><tr><th>x</th><th>y</th></tr></thead><tbody><tr><td>http://example.com/1</td><td>http://example.com/2</td></tr><tr><td>http://example.com/1</td><td>http://example.com/3</td></tr><tr><td>http://example.com/2</td><td>http://example.com/3</td></tr></tbody></table><p>結果の順序は不定。</p></details><p>IRIだけでは人物名が分かりにくい。次の <a href="#t1">T1</a> で、基本2の rdfs:label を組み合わせて日本語の名前を取得する。</p></section><section id="t1"><h2>T1：特定の関係を持つノードの組 <span class="tag">優先</span></h2><svg aria-label="特定の関係を持つノードの組のグラフパターン" role="img" viewbox="0 0 400 135"><defs><marker id="a1" markerheight="8" markerwidth="8" orient="auto" refx="7" refy="3"><path d="M0 0 L7 3 L0 6Z" fill="#4472c4"></path></marker></defs><line marker-end="url(#a1)" stroke="#4472c4" stroke-width="1.7" x1="84.0" x2="314.0" y1="65.0" y2="65.0"></line><text fill="#243142" font-size="12" paint-order="stroke" stroke="white" stroke-width="3" text-anchor="middle" x="200.0" y="58.0">friend</text><ellipse cx="50" cy="65" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="50" y="70">?x</text><ellipse cx="350" cy="65" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="350" y="70">?y</text></svg><p>基本3の友人関係に、基本2のラベル検索を2つ組み合わせる。同じ変数 ?x・?y を使うことで、それぞれの人物の日本語ラベルを取得できる。</p><button data-copy="q1" type="button">クエリをコピー</button> <small aria-live="polite" role="status"></small><pre id="q1">PREFIX prop: &lt;http://example.com/prop/&gt;
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
 SELECT ?name1 ?name2 WHERE {
-  ?x prop:friend ?y .
+  ?x prop:<mark>friend</mark> ?y .
   ?x rdfs:label ?name1 .
   ?y rdfs:label ?name2 .
-}</pre>
-<details><summary>期待される結果（3件）</summary>太郎・花子、花子・次郎、太郎・次郎。 結果の順序は不定です。</details>
-</section>
-<section>
-<h2>例5：友人の友人を検索する <small>（スライド SPARQL④）</small></h2>
-<button type="button" data-copy="q5">クエリをコピー</button> <small role="status"></small>
-<pre id="q5">PREFIX prop: &lt;http://example.com/prop/&gt;
+}</pre><details><summary>MiniKGでの結果例（3件）</summary><table><thead><tr><th>name1</th><th>name2</th></tr></thead><tbody><tr><td>太郎</td><td>次郎</td></tr><tr><td>太郎</td><td>花子</td></tr><tr><td>花子</td><td>次郎</td></tr></tbody></table><small>結果の順序は不定。日本語ラベルは @ja 付きです。</small></details><h3>書き換え練習</h3><p>友人から所属に変更し、結果を予想してから実行する。</p><details><summary>書き換え後の結果例（3件）</summary><table><thead><tr><th>name1</th><th>name2</th></tr></thead><tbody><tr><td>太郎</td><td>A研究室</td></tr><tr><td>次郎</td><td>B研究室</td></tr><tr><td>花子</td><td>A研究室</td></tr></tbody></table></details><p><a href="MyKG-Templates.html#t1">STEP 4：テンプレートT1へ</a></p></section><section id="t2"><h2>T2：特定の人物に関する情報一覧 <span class="tag">優先</span></h2><svg aria-label="特定の人物に関する情報一覧のグラフパターン" role="img" viewbox="0 0 400 135"><defs><marker id="a2" markerheight="8" markerwidth="8" orient="auto" refx="7" refy="3"><path d="M0 0 L7 3 L0 6Z" fill="#4472c4"></path></marker></defs><line marker-end="url(#a2)" stroke="#4472c4" stroke-width="1.7" x1="98.53739341029289" x2="299.4898187420428" y1="61.876419241198214" y2="23.12358075880179"></line><text fill="#243142" font-size="12" paint-order="stroke" stroke="white" stroke-width="3" text-anchor="middle" x="200.0" y="35.5">?p</text><line marker-end="url(#a2)" stroke="#4472c4" stroke-width="1.7" x1="99.0" x2="299.0" y1="65.0" y2="65.0"></line><text fill="#243142" font-size="12" paint-order="stroke" stroke="white" stroke-width="3" text-anchor="middle" x="200.0" y="58.0">?p</text><line marker-end="url(#a2)" stroke="#4472c4" stroke-width="1.7" x1="98.53739341029289" x2="299.4898187420428" y1="68.1235807588018" y2="106.8764192411982"></line><text fill="#243142" font-size="12" paint-order="stroke" stroke="white" stroke-width="3" text-anchor="middle" x="200.0" y="80.5">?p</text><ellipse cx="65" cy="65" fill="#ffe5a3" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="65" y="70">太郎</text><ellipse cx="335" cy="20" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="335" y="25">?y</text><ellipse cx="335" cy="65" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="335" y="70">?y</text><ellipse cx="335" cy="110" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="335" y="115">?y</text></svg><p>人物をラベルで指定し、述語も変数にして関係名と相手の名前を取得する。</p><button data-copy="q2" type="button">クエリをコピー</button> <small aria-live="polite" role="status"></small><pre id="q2">PREFIX prop: &lt;http://example.com/prop/&gt;
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
+SELECT ?relation ?name WHERE {
+  ?x rdfs:label "<mark>太郎</mark>"@ja .
+  ?x ?p ?y .
+  ?p rdfs:label ?relation .
+  ?y rdfs:label ?name .
+}</pre><p>このクエリは主語から出る関係のうち、述語と目的語にラベルがあるものを取得します。逆向きの関係は対象外です。</p><details><summary>MiniKGでの結果例（4件）</summary><table><thead><tr><th>relation</th><th>name</th></tr></thead><tbody><tr><td>友人</td><td>次郎</td></tr><tr><td>友人</td><td>花子</td></tr><tr><td>所属</td><td>A研究室</td></tr><tr><td>指導教員</td><td>田中先生</td></tr></tbody></table><small>結果の順序は不定。日本語ラベルは @ja 付きです。</small></details><h3>書き換え練習</h3><p>太郎から花子に変更し、結果を予想してから実行する。</p><details><summary>書き換え後の結果例（3件）</summary><table><thead><tr><th>relation</th><th>name</th></tr></thead><tbody><tr><td>友人</td><td>次郎</td></tr><tr><td>所属</td><td>A研究室</td></tr><tr><td>指導教員</td><td>田中先生</td></tr></tbody></table></details><p><a href="MyKG-Templates.html#t2">STEP 4：テンプレートT2へ</a></p></section><section id="t3"><h2>T3：特定の人物と指定した関係を持つノード <span class="tag">優先</span></h2><svg aria-label="特定の人物と指定した関係を持つノードのグラフパターン" role="img" viewbox="0 0 400 135"><defs><marker id="a3" markerheight="8" markerwidth="8" orient="auto" refx="7" refy="3"><path d="M0 0 L7 3 L0 6Z" fill="#4472c4"></path></marker></defs><line marker-end="url(#a3)" stroke="#4472c4" stroke-width="1.7" x1="99.0" x2="299.0" y1="65.0" y2="65.0"></line><text fill="#243142" font-size="12" paint-order="stroke" stroke="white" stroke-width="3" text-anchor="middle" x="200.0" y="58.0">supervisor</text><ellipse cx="65" cy="65" fill="#ffe5a3" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="65" y="70">太郎</text><ellipse cx="335" cy="65" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="335" y="70">?y</text></svg><p>人物のラベルと述語を固定して相手を検索する。</p><button data-copy="q3" type="button">クエリをコピー</button> <small aria-live="polite" role="status"></small><pre id="q3">PREFIX prop: &lt;http://example.com/prop/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
+SELECT ?name WHERE {
+  ?x rdfs:label "<mark>太郎</mark>"@ja .
+  ?x prop:<mark>supervisor</mark> ?y .
+  ?y rdfs:label ?name .
+}</pre><details><summary>MiniKGでの結果例（1件）</summary><table><thead><tr><th>name</th></tr></thead><tbody><tr><td>田中先生</td></tr></tbody></table><small>結果の順序は不定。日本語ラベルは @ja 付きです。</small></details><h3>書き換え練習</h3><p>太郎から次郎に変更し、結果を予想してから実行する。</p><details><summary>書き換え後の結果例（1件）</summary><table><thead><tr><th>name</th></tr></thead><tbody><tr><td>佐藤先生</td></tr></tbody></table></details><p><a href="MyKG-Templates.html#t3">STEP 4：テンプレートT3へ</a></p></section><section id="t4"><h2>T4：同じ関係先を持つ人物 <span class="tag">追加練習</span></h2><svg aria-label="同じ関係先を持つ人物のグラフパターン" role="img" viewbox="0 0 400 135"><defs><marker id="a4" markerheight="8" markerwidth="8" orient="auto" refx="7" refy="3"><path d="M0 0 L7 3 L0 6Z" fill="#4472c4"></path></marker></defs><line marker-end="url(#a4)" stroke="#4472c4" stroke-width="1.7" x1="98.57685287362375" x2="299.44803813381014" y1="24.988266753567604" y2="62.0117332464324"></line><text fill="#243142" font-size="12" paint-order="stroke" stroke="white" stroke-width="3" text-anchor="middle" x="200.0" y="36.5">affiliation</text><line marker-end="url(#a4)" stroke="#4472c4" stroke-width="1.7" x1="98.57685287362375" x2="299.44803813381014" y1="105.0117332464324" y2="67.9882667535676"></line><text fill="#243142" font-size="12" paint-order="stroke" stroke="white" stroke-width="3" text-anchor="middle" x="200.0" y="79.5">affiliation</text><ellipse cx="65" cy="22" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="65" y="27">?x</text><ellipse cx="65" cy="108" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="65" y="113">?y</text><ellipse cx="335" cy="65" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="335" y="70">?z</text></svg><p>同じ目的語の変数を共有し、FILTERで同一人物を除外する。逆順の組も返る。</p><button data-copy="q4" type="button">クエリをコピー</button> <small aria-live="polite" role="status"></small><pre id="q4">PREFIX prop: &lt;http://example.com/prop/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
+SELECT ?name1 ?name2 ?common WHERE {
+  ?x prop:<mark>affiliation</mark> ?z .
+  ?y prop:<mark>affiliation</mark> ?z .
+  ?x rdfs:label ?name1 .
+  ?y rdfs:label ?name2 .
+  ?z rdfs:label ?common .
+  FILTER (?x != ?y)
+}</pre><p>FILTERで同一ノードの組を除外します。A・BとB・Aの両方が得られます。</p><details><summary>MiniKGでの結果例（2件）</summary><table><thead><tr><th>name1</th><th>name2</th><th>common</th></tr></thead><tbody><tr><td>太郎</td><td>花子</td><td>A研究室</td></tr><tr><td>花子</td><td>太郎</td><td>A研究室</td></tr></tbody></table><small>結果の順序は不定。日本語ラベルは @ja 付きです。</small></details><h3>書き換え練習</h3><p>所属から指導教員へ（2か所）に変更し、結果を予想してから実行する。</p><details><summary>書き換え後の結果例（2件）</summary><table><thead><tr><th>name1</th><th>name2</th><th>common</th></tr></thead><tbody><tr><td>太郎</td><td>花子</td><td>田中先生</td></tr><tr><td>花子</td><td>太郎</td><td>田中先生</td></tr></tbody></table></details><p><a href="MyKG-Templates.html#t4">STEP 4：テンプレートT4へ</a></p></section><section id="t5"><h2>T5：2つの関係をたどった検索 <span class="tag">追加練習</span></h2><svg aria-label="2つの関係をたどった検索のグラフパターン" role="img" viewbox="0 0 400 135"><defs><marker id="a5" markerheight="8" markerwidth="8" orient="auto" refx="7" refy="3"><path d="M0 0 L7 3 L0 6Z" fill="#4472c4"></path></marker></defs><line marker-end="url(#a5)" stroke="#4472c4" stroke-width="1.7" x1="76.0" x2="164.0" y1="65.0" y2="65.0"></line><text fill="#243142" font-size="12" paint-order="stroke" stroke="white" stroke-width="3" text-anchor="middle" x="121.0" y="58.0">friend</text><line marker-end="url(#a5)" stroke="#4472c4" stroke-width="1.7" x1="234.0" x2="322.0" y1="65.0" y2="65.0"></line><text fill="#243142" font-size="12" paint-order="stroke" stroke="white" stroke-width="3" text-anchor="middle" x="279.0" y="58.0">affiliation</text><ellipse cx="42" cy="65" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="42" y="70">?x</text><ellipse cx="200" cy="65" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="200" y="70">?y</text><ellipse cx="358" cy="65" fill="#d5e5fa" rx="34" ry="18" stroke="#7fa5d5"></ellipse><text fill="#17365d" font-size="14" text-anchor="middle" x="358" y="70">?z</text></svg><p>中間ノードの変数を共有して2つの関係を連結する。</p><button data-copy="q5" type="button">クエリをコピー</button> <small aria-live="polite" role="status"></small><pre id="q5">PREFIX prop: &lt;http://example.com/prop/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
 SELECT ?name1 ?name2 ?name3 WHERE {
-  ?x prop:friend ?y .
-  ?y prop:friend ?z .
+  ?x prop:<mark>friend</mark> ?y .
+  ?y prop:<mark>affiliation</mark> ?z .
   ?x rdfs:label ?name1 .
   ?y rdfs:label ?name2 .
   ?z rdfs:label ?name3 .
-}</pre>
-<details><summary>期待される結果（1件）</summary>太郎→花子→次郎。prop:friend は向きのある関係なので、花子→太郎の向きはない。 結果の順序は不定です。</details>
-</section>
-<section>
-<h2>例6：名前から検索する（太郎の指導教員） <small>（スライド SPARQL⑤）</small></h2>
-<button type="button" data-copy="q6">クエリをコピー</button> <small role="status"></small>
-<pre id="q6">PREFIX prop: &lt;http://example.com/prop/&gt;
-PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
-SELECT ?teacherName WHERE {
-  ?student rdfs:label "太郎"@ja .
-  ?student prop:supervisor ?teacher .
-  ?teacher rdfs:label ?teacherName .
-}</pre>
-<details><summary>期待される結果（1件）</summary>田中先生。"太郎"（@jaなし）では0件になる。 結果の順序は不定です。</details>
-</section>
-<section>
-<h2>例7：同じ研究室に所属する人物（発展） <small>（スライド SPARQL⑥）</small></h2>
-<button type="button" data-copy="q7">クエリをコピー</button> <small role="status"></small>
-<pre id="q7">PREFIX prop: &lt;http://example.com/prop/&gt;
-SELECT ?x ?y ?lab WHERE {
-  ?x prop:affiliation ?lab .
-  ?y prop:affiliation ?lab .
-  FILTER (?x != ?y)
-}</pre>
-<details><summary>期待される結果（2件）</summary>太郎・花子の組が2方向で得られる（結果はIRI）。 結果の順序は不定です。</details>
-<h3>例7b：名前で表示する</h3>
-<button type="button" data-copy="q7b">クエリをコピー</button> <small role="status"></small>
-<pre id="q7b">PREFIX prop: &lt;http://example.com/prop/&gt;
-PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
-SELECT ?name1 ?name2 ?labName WHERE {
-  ?x prop:affiliation ?lab .
-  ?y prop:affiliation ?lab .
-  FILTER (?x != ?y)
-  ?x rdfs:label ?name1 .
-  ?y rdfs:label ?name2 .
-  ?lab rdfs:label ?labName .
-}</pre>
-<details><summary>期待される結果（2件）</summary>太郎・花子・A研究室、花子・太郎・A研究室。 結果の順序は不定です。</details>
-</section>
-<script>document.querySelectorAll('button[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const el=document.getElementById(b.dataset.copy);try{await navigator.clipboard.writeText(el.textContent);b.nextElementSibling.textContent='コピーしました';}catch(e){const r=document.createRange();r.selectNodeContents(el);const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.nextElementSibling.textContent='選択しました。Ctrl+Cでコピーしてください。';}}));</script>
-<script>
-// download属性付きリンクを強制保存（ブラウザ表示を防ぐ）。取得できない環境では通常のリンク動作に任せる。
-document.querySelectorAll('a[download]').forEach(a=>a.addEventListener('click',async e=>{
-  e.preventDefault();
-  try{
-    const res=await fetch(a.href); if(!res.ok) throw Error(res.status);
-    const blob=new Blob([await res.arrayBuffer()],{type:'application/octet-stream'});
-    const url=URL.createObjectURL(blob), t=document.createElement('a');
-    t.href=url; t.download=a.getAttribute('download')||decodeURIComponent(a.href.split('/').pop());
-    document.body.append(t); t.click(); t.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000);
-  }catch(err){ location.href=a.href; }
-}));
-</script>
-</body></html>
+}</pre><p>2つの矢印が同じ中間ノードでつながる部分を探します。</p><details><summary>MiniKGでの結果例（3件）</summary><table><thead><tr><th>name1</th><th>name2</th><th>name3</th></tr></thead><tbody><tr><td>太郎</td><td>次郎</td><td>B研究室</td></tr><tr><td>太郎</td><td>花子</td><td>A研究室</td></tr><tr><td>花子</td><td>次郎</td><td>B研究室</td></tr></tbody></table><small>結果の順序は不定。日本語ラベルは @ja 付きです。</small></details><h3>書き換え練習</h3><p>所属から指導教員に変更し、結果を予想してから実行する。</p><details><summary>書き換え後の結果例（3件）</summary><table><thead><tr><th>name1</th><th>name2</th><th>name3</th></tr></thead><tbody><tr><td>太郎</td><td>次郎</td><td>佐藤先生</td></tr><tr><td>太郎</td><td>花子</td><td>田中先生</td></tr><tr><td>花子</td><td>次郎</td><td>佐藤先生</td></tr></tbody></table></details><p><a href="MyKG-Templates.html#t5">STEP 4：テンプレートT5へ</a></p></section><script>document.querySelectorAll('button[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const el=document.getElementById(b.dataset.copy);try{await navigator.clipboard.writeText(el.textContent);b.nextElementSibling.textContent='コピーしました';}catch(e){const r=document.createRange();r.selectNodeContents(el);const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.nextElementSibling.textContent='選択しました。Ctrl+C（MacはCommand+C）でコピーしてください。';}}));</script></body></html>
