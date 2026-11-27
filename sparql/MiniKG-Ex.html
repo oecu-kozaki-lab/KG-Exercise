@@ -6,7 +6,7 @@
 <p><a href="../index.html">演習トップ</a></p>
 <h1>MiniKG：SPARQLクエリ例</h1>
 <p><a href="../samples/MiniKG.ttl" download>MiniKG.ttlを保存</a> ／ <a href="../samples/MiniKG.tsv" download>TSVデータ</a> ／ <a href="../tools/rdf-sparql.html" target="_blank" rel="noopener">簡易RDF-DB v4.1を開く</a></p>
-<p>MiniKG.ttlを読み込み、各クエリをコピーして実行してください。実行前に結果を予想しましょう。例7は発展課題です。各例の見出しには対応するスライドの番号を示しています。</p>
+<p>簡易RDF-DBの「MiniKGサンプル読み込み」ボタン（またはMiniKG.ttl）でMiniKGを読み込み、各クエリをコピーして実行してください。実行前に結果を予想しましょう。例7は発展課題です。各例の見出しには対応するスライドの番号を示しています。</p>
 <p><img src="../samples/MiniKG.svg" alt="MiniKGのグラフ：太郎・花子・次郎の友人関係、所属（A研究室・B研究室）、指導教員（田中先生・佐藤先生）" style="max-width:100%;height:auto"></p>
 <details><summary>MiniKGの知識（9トリプル）</summary><table><tr><th>主語</th><th>述語</th><th>目的語</th></tr><tr><td>太郎</td><td>友人</td><td>花子</td></tr><tr><td>花子</td><td>友人</td><td>次郎</td></tr><tr><td>太郎</td><td>友人</td><td>次郎</td></tr><tr><td>太郎</td><td>所属</td><td>A研究室</td></tr><tr><td>花子</td><td>所属</td><td>A研究室</td></tr><tr><td>次郎</td><td>所属</td><td>B研究室</td></tr><tr><td>太郎</td><td>指導教員</td><td>田中先生</td></tr><tr><td>花子</td><td>指導教員</td><td>田中先生</td></tr><tr><td>次郎</td><td>指導教員</td><td>佐藤先生</td></tr></table><p>述語の対応：友人＝prop:friend、所属＝prop:affiliation、指導教員＝prop:supervisor</p></details>
 <section>

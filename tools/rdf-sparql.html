@@ -6,20 +6,46 @@ body{font:16px system-ui,sans-serif;max-width:1050px;margin:32px auto;padding:0 
 </style></head><body>
 <h1>簡易RDF-DB v4.1</h1><p>RDFを読み込み、構文を確認してSPARQLで検索します。</p>
 <p id="startup" role="status">ライブラリを読み込み中…</p>
-<section><h2>1. RDFファイルの読み込み</h2><input id="file" type="file" accept=".ttl,.nt,text/turtle,application/n-triples" disabled><button id="sample" disabled>サンプルRDFを読み込む</button><p id="status" role="status"></p><details><summary>読み込んだRDFの原文</summary><pre id="source"></pre></details><details open><summary>トリプル一覧（最大200件）</summary><div class="scroll" id="triples"></div></details></section>
+<section><h2>1. RDFファイルの読み込み</h2><input id="file" type="file" accept=".ttl,.nt,text/turtle,application/n-triples" disabled><button id="sample" disabled>MiniKGサンプル読み込み</button><p><small>MiniKGサンプル：演習の共通サンプル（人物の友人・所属・指導教員、22トリプル）。自分のKGは「ファイルを選択」で読み込みます。</small></p><p id="status" role="status"></p><details><summary>読み込んだRDFの原文</summary><pre id="source"></pre></details><details open><summary>トリプル一覧（最大200件）</summary><div class="scroll" id="triples"></div></details></section>
 <section><h2>2. SPARQLクエリ</h2><textarea id="query" rows="8" spellcheck="false">SELECT ?s ?p ?o
 WHERE {
   ?s ?p ?o .
 }
-LIMIT 100</textarea><button id="run" disabled>クエリ実行</button><button id="all">全トリプルの検索例</button><button id="names">名前の検索例</button><small>SELECTのみ対応。名前の検索例は rdfs:label を検索します。</small></section>
+LIMIT 100</textarea><button id="run" disabled>クエリ実行</button><button id="all">全トリプルの検索例</button><button id="names">ラベルの検索例</button><small>SELECTのみ対応。ラベルの検索例はIRIとrdfs:labelの一覧を表示します。その他の例は<a href="../sparql/MiniKG-Ex.html" target="_blank" rel="noopener">SPARQLクエリ例</a>を参照。</small></section>
 <section><h2>3. 検索結果</h2><p id="qstatus" role="status"></p><div id="results" class="scroll"></div></section>
 <script src="https://rdf.js.org/comunica-browser/versions/v4/engines/query-sparql-rdfjs/comunica-browser.js"></script>
 <script type="module">
 const $ = id => document.getElementById(id);
-const sample = `@prefix ex: <http://example.org/> .
+// 内蔵サンプル：MiniKG（samples/MiniKG.ttl と同一内容、22トリプル）
+const sample = `@prefix ex: <http://example.com/> .
+@prefix prop: <http://example.com/prop/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-ex:Alice rdfs:label "Alice" ; ex:age 21 ; ex:knows ex:Bob .
-ex:Bob rdfs:label "Bob" ; ex:age 22 .`;
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+ex:1 prop:friend ex:2 .
+ex:2 prop:friend ex:3 .
+ex:1 prop:friend ex:3 .
+ex:1 prop:affiliation ex:4 .
+ex:2 prop:affiliation ex:4 .
+ex:3 prop:affiliation ex:5 .
+ex:1 prop:supervisor ex:6 .
+ex:2 prop:supervisor ex:6 .
+ex:3 prop:supervisor ex:7 .
+
+ex:1 rdfs:label "太郎"@ja .
+ex:2 rdfs:label "花子"@ja .
+ex:3 rdfs:label "次郎"@ja .
+ex:4 rdfs:label "A研究室"@ja .
+ex:5 rdfs:label "B研究室"@ja .
+ex:6 rdfs:label "田中先生"@ja .
+ex:7 rdfs:label "佐藤先生"@ja .
+
+prop:friend rdf:type rdf:Property .
+prop:friend rdfs:label "友人"@ja .
+prop:affiliation rdf:type rdf:Property .
+prop:affiliation rdfs:label "所属"@ja .
+prop:supervisor rdf:type rdf:Property .
+prop:supervisor rdfs:label "指導教員"@ja .`;
 let Parser, Store, engine, SparqlParser, store = null, busy = false;
 function message(id, text, error=false){$(id).textContent=text;$(id).className=error?'error':'ok';}
 function controls(){ $('run').disabled=busy||!store; $('file').disabled=busy; $('sample').disabled=busy; }
@@ -28,9 +54,9 @@ function table(id, headers, rows){const t=document.createElement('table'),head=t
 function reset(){store=null;$('triples').replaceChildren();$('results').replaceChildren();$('qstatus').textContent='';$('source').textContent='';}
 function load(text, name){reset();$('source').textContent=text;try{const parser=new Parser({format:name.toLowerCase().endsWith('.nt')?'N-Triples':'Turtle'});const quads=parser.parse(text);store=new Store(quads);message('status',`${name}：構文チェック成功。${store.size} トリプル（重複除外後）`);table('triples',['主語','述語','目的語'],store.getQuads(null,null,null,null).slice(0,200).map(q=>[term(q.subject),term(q.predicate),term(q.object)]));}catch(e){store=null;message('status','RDF読み込みエラー：'+e.message,true);}controls();}
 $('file').onchange=async()=>{const f=$('file').files[0];if(!f)return;busy=true;controls();reset();try{load(await f.text(),f.name);}catch(e){message('status',e.message,true);}finally{busy=false;controls();}};
-$('sample').onclick=()=>{$('file').value='';load(sample,'sample.ttl');};
+$('sample').onclick=()=>{$('file').value='';load(sample,'MiniKG.ttl');};
 $('all').onclick=()=>{$('query').value='SELECT ?s ?p ?o\nWHERE { ?s ?p ?o . }\nLIMIT 100';};
-$('names').onclick=()=>{$('query').value='PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT ?person ?name\nWHERE { ?person rdfs:label ?name . }';};
+$('names').onclick=()=>{$('query').value='PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT ?x ?label\nWHERE { ?x rdfs:label ?label . }';};
 // Reject external data sources, including nested SERVICE and FROM clauses.
 // Expose only the RDF/JS DatasetCore interface; avoid N3's Node-style streams.
 function arrayDataset(quads){return {
